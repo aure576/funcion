@@ -3,22 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Test</title>
+    <title>Chat Bidireccional - Aurelio AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        .chat-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        input, textarea, button {
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
 </head>
 <body>
-    <h1>¡Sitio funcionando!</h1>
-    <p>Si ves este mensaje, el sitio está funcionando correctamente.</p>
-    
-    <div style="margin: 20px; padding: 20px; border: 1px solid #ccc;">
-        <h2>Test de la función</h2>
-        <button onclick="testFunction()">Probar Función</button>
-        <div id="result"></div>
+    <div class="container">
+        <h1>💬 Chat Bidireccional</h1>
+        <form class="chat-form" id="chatForm">
+            <input 
+                type="text" 
+                id="sender" 
+                placeholder="Tu nombre" 
+                required
+                maxlength="50"
+            >
+            <textarea 
+                id="message" 
+                placeholder="Escribe tu mensaje aquí..." 
+                required
+                rows="4"
+                maxlength="500"
+            ></textarea>
+            <input 
+                type="text" 
+                id="clientId" 
+                placeholder="ID del cliente (opcional)"
+                maxlength="50"
+            >
+            <button type="submit" id="sendButton">
+                Enviar Mensaje
+            </button>
+        </form>
+        <div id="status"></div>
     </div>
 
     <script>
-        async function testFunction() {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = 'Probando...';
+        const form = document.getElementById('chatForm');
+        const statusDiv = document.getElementById('status');
+        const sendButton = document.getElementById('sendButton');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const sender = document.getElementById('sender').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const clientId = document.getElementById('clientId').value.trim() || null;
+
+            if (!sender || !message) {
+                showStatus('Por favor completa todos los campos obligatorios', 'error');
+                return;
+            }
+
+            sendButton.disabled = true;
+            sendButton.textContent = 'Enviando...';
             
             try {
                 const response = await fetch('/.netlify/functions/enviar', {
@@ -27,20 +156,37 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        sender: 'Test',
-                        message: 'Mensaje de prueba',
-                        clientId: 'test123'
+                        sender: sender,
+                        message: message,
+                        clientId: clientId
                     })
                 });
 
                 const result = await response.json();
-                resultDiv.innerHTML = `
-                    <h3>Resultado:</h3>
-                    <p>Status: ${response.status}</p>
-                    <p>Response: ${JSON.stringify(result, null, 2)}</p>
-                `;
+
+                if (response.ok && result.success) {
+                    showStatus('¡Mensaje enviado exitosamente! 🎉', 'success');
+                    form.reset();
+                } else {
+                    showStatus(`Error: ${result.error || 'Error desconocido'}`, 'error');
+                }
             } catch (error) {
-                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                showStatus(`Error de conexión: ${error.message}`, 'error');
+            } finally {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Enviar Mensaje';
+            }
+        });
+
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = '';
+                }, 5000);
             }
         }
     </script>
