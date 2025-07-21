@@ -10,6 +10,14 @@ const pusher = new Pusher({
 
 exports.handler = async (event) => {
   try {
+    // Validar que existe event.body
+    if (!event.body) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ success: false, error: "Request body is missing" }),
+      };
+    }
+
     const body = JSON.parse(event.body);
 
     // Desestructura y valida los campos requeridos
