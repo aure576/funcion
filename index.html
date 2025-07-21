@@ -3,190 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Bidireccional - Aurelio AI</title>
+    <title>Chat Aurelio AI</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
         }
         
-        .container {
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 500px;
-            width: 90%;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         h1 {
             text-align: center;
-            color: #333;
+            color: #1a73e8;
             margin-bottom: 30px;
-            font-size: 2rem;
         }
         
-        .chat-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .form-group {
+            margin-bottom: 20px;
         }
         
-        input, textarea, button {
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
         }
         
         input:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #1a73e8;
         }
         
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .send-btn {
+            width: 100%;
+            background-color: #1a73e8;
             color: white;
+            padding: 12px;
             border: none;
+            border-radius: 4px;
+            font-size: 16px;
             cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
         
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .send-btn:hover {
+            background-color: #1557b0;
         }
         
-        button:disabled {
-            opacity: 0.6;
+        .send-btn:disabled {
+            background-color: #ccc;
             cursor: not-allowed;
-            transform: none;
         }
         
-        .status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
+        .message {
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
             text-align: center;
-            font-weight: bold;
         }
         
         .success {
-            background: #d4edda;
+            background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
         
         .error {
-            background: #f8d7da;
+            background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>💬 Chat Bidireccional</h1>
-        <form class="chat-form" id="chatForm">
-            <input 
-                type="text" 
-                id="sender" 
-                placeholder="Tu nombre" 
-                required
-                maxlength="50"
-            >
-            <textarea 
-                id="message" 
-                placeholder="Escribe tu mensaje aquí..." 
-                required
-                rows="4"
-                maxlength="500"
-            ></textarea>
-            <input 
-                type="text" 
-                id="clientId" 
-                placeholder="ID del cliente (opcional)"
-                maxlength="50"
-            >
-            <button type="submit" id="sendButton">
-                Enviar Mensaje
-            </button>
+    <div class="chat-container">
+        <h1>💬 Chat Aurelio AI</h1>
+        
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="senderName">Tu nombre:</label>
+                <input type="text" id="senderName" required maxlength="50">
+            </div>
+            
+            <div class="form-group">
+                <label for="messageText">Mensaje:</label>
+                <textarea id="messageText" required maxlength="500" placeholder="Escribe tu mensaje aquí..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="clientId">ID Cliente (opcional):</label>
+                <input type="text" id="clientId" maxlength="50">
+            </div>
+            
+            <button type="submit" class="send-btn" id="submitBtn">Enviar Mensaje</button>
         </form>
-        <div id="status"></div>
+        
+        <div id="statusMessage"></div>
     </div>
 
     <script>
-        const form = document.getElementById('chatForm');
-        const statusDiv = document.getElementById('status');
-        const sendButton = document.getElementById('sendButton');
-
-        form.addEventListener('submit', async (e) => {
+        document.getElementById('messageForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const sender = document.getElementById('sender').value.trim();
-            const message = document.getElementById('message').value.trim();
-            const clientId = document.getElementById('clientId').value.trim() || null;
-
-            if (!sender || !message) {
-                showStatus('Por favor completa todos los campos obligatorios', 'error');
+            const senderName = document.getElementById('senderName').value.trim();
+            const messageText = document.getElementById('messageText').value.trim();
+            const clientId = document.getElementById('clientId').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            if (!senderName || !messageText) {
+                showMessage('Por favor completa los campos obligatorios', 'error');
                 return;
             }
-
-            sendButton.disabled = true;
-            sendButton.textContent = 'Enviando...';
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
             
             try {
                 const response = await fetch('/.netlify/functions/enviar', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        sender: sender,
-                        message: message,
-                        clientId: clientId
+                        sender: senderName,
+                        message: messageText,
+                        clientId: clientId || null
                     })
                 });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showStatus('¡Mensaje enviado exitosamente! 🎉', 'success');
-                    form.reset();
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showMessage('Mensaje enviado correctamente', 'success');
+                    document.getElementById('messageForm').reset();
                 } else {
-                    showStatus(`Error: ${result.error || 'Error desconocido'}`, 'error');
+                    showMessage('Error: ' + (data.error || 'Error desconocido'), 'error');
                 }
+                
             } catch (error) {
-                showStatus(`Error de conexión: ${error.message}`, 'error');
+                showMessage('Error de conexión: ' + error.message, 'error');
             } finally {
-                sendButton.disabled = false;
-                sendButton.textContent = 'Enviar Mensaje';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Mensaje';
             }
         });
-
-        function showStatus(message, type) {
-            statusDiv.textContent = message;
-            statusDiv.className = `status ${type}`;
+        
+        function showMessage(text, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = text;
+            statusMessage.className = 'message ' + type;
             
             if (type === 'success') {
                 setTimeout(() => {
-                    statusDiv.textContent = '';
-                    statusDiv.className = '';
-                }, 5000);
+                    statusMessage.textContent = '';
+                    statusMessage.className = '';
+                }, 4000);
             }
         }
     </script>

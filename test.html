@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Test</title>
+</head>
+<body>
+    <h1>¡Sitio funcionando!</h1>
+    <p>Si ves este mensaje, el sitio está funcionando correctamente.</p>
+    
+    <div style="margin: 20px; padding: 20px; border: 1px solid #ccc;">
+        <h2>Test de la función</h2>
+        <button onclick="testFunction()">Probar Función</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function testFunction() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Probando...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/enviar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sender: 'Test',
+                        message: 'Mensaje de prueba',
+                        clientId: 'test123'
+                    })
+                });
+
+                const result = await response.json();
+                resultDiv.innerHTML = `
+                    <h3>Resultado:</h3>
+                    <p>Status: ${response.status}</p>
+                    <p>Response: ${JSON.stringify(result, null, 2)}</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
