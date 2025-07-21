@@ -1,0 +1,22 @@
+{
+  "name": "funcion-chat",
+  "version": "1.0.0",
+  "description": "Chat bidireccional con Pusher y Netlify Functions",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step needed'",
+    "start": "netlify serve"
+  },
+  "dependencies": {
+    "pusher": "^5.1.3"
+  },
+  "keywords": [
+    "chat",
+    "pusher",
+    "netlify",
+    "functions"
+  ],
+  "author": "Aurelio AI Developer",
+  "license": "MIT"
+}
