@@ -1,13 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Sitio Funcionando</title>
-</head>
-<body>
-    <h1>✅ El sitio está funcionando correctamente</h1>
-    <p>Fecha: <script>document.write(new Date().toLocaleString())</script></p>
-</body>
-</html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Aurelio AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
         
         h1 {
             text-align: center;
@@ -259,7 +271,6 @@
             const messageText = document.getElementById('messageText').value.trim();
             const clientIdInput = document.getElementById('clientId').value.trim();
             const submitBtn = document.getElementById('submitBtn');
-            const statusMessage = document.getElementById('statusMessage');
             
             if (!senderName || !messageText) {
                 showMessage('Por favor completa los campos obligatorios', 'error');
@@ -293,7 +304,6 @@
                 
                 if (response.ok && data.success) {
                     showMessage('Mensaje enviado correctamente', 'success');
-                    // Solo limpiar el campo de mensaje, mantener nombre y clientId
                     document.getElementById('messageText').value = '';
                 } else {
                     showMessage('Error: ' + (data.error || 'Error desconocido'), 'error');
