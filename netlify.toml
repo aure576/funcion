@@ -2,6 +2,9 @@
   functions = ".netlify/functions"
   publish = "."
   command = "echo 'Build complete'"
+  
+[build.environment]
+  NODE_VERSION = "18"
 
 [functions]
   node_bundler = "esbuild"
