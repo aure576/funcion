@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Decorador - Aurelio AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        h1 {
+            color: #28a745;
+            margin: 0;
+        }
+        
+        .connection-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .chat-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            height: 600px;
+        }
+        
+        .messages-panel {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #fafafa;
+        }
+        
+        .response-panel {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            background-color: #fff;
+        }
+        
+        .message-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .message-item:hover {
+            border-color: #28a745;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
+        }
+        
+        .message-item.selected {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .sender-name {
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .client-id {
+            font-size: 11px;
+            color: #007bff;
+            background-color: #e7f3ff;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .message-text {
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .response-form {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .response-form h3 {
+            margin-top: 0;
+            color: #28a745;
+        }
+        
+        .selected-message-info {
+            background-color: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+        
+        .send-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: auto;
+        }
+        
+        .send-btn:hover {
+            background-color: #218838;
+        }
+        
+        .send-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .no-messages {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>🎨 Panel Decorador - Aurelio AI</h1>
+            <div id="connectionStatus" class="connection-status disconnected">
+                Desconectado
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalMessages">0</div>
+                <div class="stat-label">Mensajes Recibidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeClients">0</div>
+                <div class="stat-label">Clientes Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="responsesCount">0</div>
+                <div class="stat-label">Respuestas Enviadas</div>
+            </div>
+        </div>
+        
+        <div id="statusMessage"></div>
+        
+        <div class="chat-area">
+            <div class="messages-panel">
+                <h3>📨 Mensajes Recibidos</h3>
+                <div id="messagesList">
+                    <div class="no-messages">
+                        Esperando mensajes de clientes...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="response-panel">
+                <form id="responseForm" class="response-form">
+                    <h3>✍️ Responder</h3>
+                    
+                    <div id="selectedMessageInfo" class="selected-message-info" style="display: none;">
+                        <strong>Respondiendo a:</strong> <span id="selectedSender"></span><br>
+                        <strong>Cliente ID:</strong> <span id="selectedClientId"></span><br>
+                        <strong>Mensaje:</strong> <span id="selectedMessage"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="responseText">Tu respuesta:</label>
+                        <textarea id="responseText" placeholder="Escribe tu respuesta aquí..." disabled></textarea>
+                    </div>
+                    
+                    <button type="submit" class="send-btn" id="sendResponseBtn" disabled>
+                        Enviar Respuesta
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script>
+        let pusher;
+        let channel;
+        let messages = [];
+        let selectedMessageId = null;
+        let stats = {
+            totalMessages: 0,
+            activeClients: new Set(),
+            responsesCount: 0
+        };
+        
+        // Inicializar Pusher
+        function initializePusher() {
+            pusher = new Pusher('46e53dfe6f8d93182aaa', {
+                cluster: 'us2'
+            });
+            
+            channel = pusher.subscribe('chataurelio');
+            
+            channel.bind('chatbidireccion', function(data) {
+                // Solo procesar mensajes que no sean respuestas del decorador
+                if (data.sender !== 'Aurelio AI' && data.sender !== 'Decorador') {
+                    addReceivedMessage(data);
+                    updateStats();
+                }
+            });
+            
+            channel.bind('pusher:subscription_succeeded', function() {
+                updateConnectionStatus(true);
+            });
+            
+            pusher.connection.bind('disconnected', function() {
+                updateConnectionStatus(false);
+            });
+            
+            pusher.connection.bind('connected', function() {
+                updateConnectionStatus(true);
+            });
+        }
+        
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.textContent = 'Conectado';
+                statusElement.className = 'connection-status connected';
+            } else {
+                statusElement.textContent = 'Desconectado';
+                statusElement.className = 'connection-status disconnected';
+            }
+        }
+        
+        function addReceivedMessage(data) {
+            const messageId = Date.now() + Math.random();
+            const message = {
+                id: messageId,
+                sender: data.sender,
+                message: data.message,
+                clientId: data.clientId,
+                timestamp: new Date(),
+                responded: false
+            };
+            
+            messages.unshift(message);
+            stats.totalMessages++;
+            if (data.clientId) {
+                stats.activeClients.add(data.clientId);
+            }
+            
+            renderMessages();
+        }
+        
+        function renderMessages() {
+            const messagesList = document.getElementById('messagesList');
+            
+            if (messages.length === 0) {
+                messagesList.innerHTML = '<div class="no-messages">Esperando mensajes de clientes...</div>';
+                return;
+            }
+            
+            messagesList.innerHTML = messages.map(message => `
+                <div class="message-item ${message.id === selectedMessageId ? 'selected' : ''}" 
+                     onclick="selectMessage(${message.id})">
+                    <div class="message-header">
+                        <span class="sender-name">${message.sender}</span>
+                        <span class="message-time">${message.timestamp.toLocaleTimeString('es-ES')}</span>
+                    </div>
+                    ${message.clientId ? `<div class="client-id">ID: ${message.clientId}</div>` : ''}
+                    <div class="message-text">${message.message}</div>
+                    ${message.responded ? '<div style="color: #28a745; font-size: 12px; margin-top: 5px;">✓ Respondido</div>' : ''}
+                </div>
+            `).join('');
+        }
+        
+        function selectMessage(messageId) {
+            selectedMessageId = messageId;
+            const message = messages.find(m => m.id === messageId);
+            
+            if (message) {
+                document.getElementById('selectedSender').textContent = message.sender;
+                document.getElementById('selectedClientId').textContent = message.clientId || 'Sin ID';
+                document.getElementById('selectedMessage').textContent = message.message;
+                document.getElementById('selectedMessageInfo').style.display = 'block';
+                document.getElementById('responseText').disabled = false;
+                document.getElementById('sendResponseBtn').disabled = false;
+                document.getElementById('responseText').focus();
+            }
+            
+            renderMessages();
+        }
+        
+        function updateStats() {
+            document.getElementById('totalMessages').textContent = stats.totalMessages;
+            document.getElementById('activeClients').textContent = stats.activeClients.size;
+            document.getElementById('responsesCount').textContent = stats.responsesCount;
+        }
+        
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePusher();
+            updateStats();
+        });
+        
+        // Manejar envío de respuesta
+        document.getElementById('responseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!selectedMessageId) {
+                showMessage('Selecciona un mensaje para responder', 'error');
+                return;
+            }
+            
+            const responseText = document.getElementById('responseText').value.trim();
+            if (!responseText) {
+                showMessage('Escribe una respuesta', 'error');
+                return;
+            }
+            
+            const selectedMessage = messages.find(m => m.id === selectedMessageId);
+            const submitBtn = document.getElementById('sendResponseBtn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/enviar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sender: 'Aurelio AI',
+                        message: responseText,
+                        clientId: selectedMessage.clientId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showMessage('Respuesta enviada correctamente', 'success');
+                    
+                    // Marcar mensaje como respondido
+                    selectedMessage.responded = true;
+                    stats.responsesCount++;
+                    updateStats();
+                    renderMessages();
+                    
+                    // Limpiar formulario
+                    document.getElementById('responseText').value = '';
+                    document.getElementById('selectedMessageInfo').style.display = 'none';
+                    document.getElementById('responseText').disabled = true;
+                    selectedMessageId = null;
+                    
+                } else {
+                    showMessage('Error: ' + (data.error || 'Error desconocido'), 'error');
+                }
+                
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+        
+        function showMessage(text, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = text;
+            statusMessage.className = 'message ' + type;
+            
+            setTimeout(() => {
+                statusMessage.textContent = '';
+                statusMessage.className = '';
+            }, 4000);
+        }
+        
+        // Función para limpiar mensajes antiguos (opcional)
+        setInterval(() => {
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+            messages = messages.filter(message => message.timestamp > oneHourAgo);
+            renderMessages();
+        }, 300000); // Cada 5 minutos
+    </script>
+</body>
+</html>

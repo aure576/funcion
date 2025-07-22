@@ -10,10 +10,28 @@ const pusher = new Pusher({
 
 exports.handler = async (event) => {
   try {
+    // Manejar preflight CORS
+    if (event.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        },
+        body: '',
+      };
+    }
+
     // Validar que existe event.body
     if (!event.body) {
       return {
         statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        },
         body: JSON.stringify({ success: false, error: "Request body is missing" }),
       };
     }
@@ -25,24 +43,48 @@ exports.handler = async (event) => {
     if (!message || !sender) {
       return {
         statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        },
         body: JSON.stringify({ success: false, error: "Faltan campos obligatorios: message o sender" }),
       };
     }
+
+    // Registrar el mensaje para depuración
+    console.log(`Mensaje de ${sender}: ${message} (ClientID: ${clientId || 'ninguno'})`);
 
     // Envía el mensaje usando Pusher
     await pusher.trigger("chataurelio", "chatbidireccion", {
       message,
       sender,
       clientId,
+      timestamp: new Date().toISOString()
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true }),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      },
+      body: JSON.stringify({ 
+        success: true,
+        message: "Mensaje enviado correctamente",
+        timestamp: new Date().toISOString()
+      }),
     };
   } catch (error) {
+    console.error('Error en la función:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      },
       body: JSON.stringify({ success: false, error: error.message }),
     };
   }

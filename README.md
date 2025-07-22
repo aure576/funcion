@@ -1,18 +1,27 @@
 # 💬 Chat Bidireccional - Aurelio AI Developer
 
 ## 🌟 Descripción
-Chat bidireccional en tiempo real utilizando Pusher WebSockets y Netlify Functions. Interfaz moderna y responsiva para comunicación instantánea.
+Sistema de chat bidireccional en tiempo real con dos interfaces: una para clientes y otra para decoradores (administradores). Utiliza Pusher WebSockets y Netlify Functions para comunicación instantánea.
 
-## 🚀 Sitio en vivo
-**URL:** https://tarta-delicada-cbd311.netlify.app
+## 🚀 Sitios en vivo
+- **Cliente:** https://tarta-delicada-cbd311.netlify.app
+- **Decorador:** https://tarta-delicada-cbd311.netlify.app/decorador/
 
 ## ⚡ Características
-- ✅ Chat en tiempo real con Pusher
-- ✅ Interfaz responsive y moderna
-- ✅ Validación de formularios
-- ✅ Manejo de errores robusto
-- ✅ Variables de entorno seguras
-- ✅ Deploy automático con Netlify
+
+### Chat del Cliente
+- ✅ Interfaz intuitiva para envío de mensajes
+- ✅ Chat en tiempo real con WebSockets
+- ✅ Visualización de conversación completa
+- ✅ Estado de conexión visible
+- ✅ Soporte para IDs de cliente
+
+### Panel del Decorador
+- ✅ Recepción instantánea de mensajes
+- ✅ Panel de administración profesional
+- ✅ Estadísticas en tiempo real
+- ✅ Respuestas dirigidas por cliente
+- ✅ Gestión de múltiples conversaciones
 
 ## 🛠️ Tecnologías
 - **Frontend:** HTML5, CSS3, JavaScript vanilla
