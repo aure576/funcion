@@ -1,50 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test - Sitio Funcionando</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-            background-color: #f0f2f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #1a73e8;
-        }
-        .status {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border-radius: 4px;
-            margin: 20px 0;
-        }
-    </style>
+    <title>Sitio Funcionando</title>
 </head>
 <body>
-    <div class="container">
-        <h1>✅ Sitio Web Test</h1>
-        <div class="status">
-            El sitio está funcionando correctamente
-        </div>
-        <p>Este es un archivo de prueba simplificado para verificar que Netlify puede servir el contenido.</p>
-        <p><strong>Fecha de test:</strong> <span id="fecha"></span></p>
-        <p><strong>Commit:</strong> July 22, 2025 - Test simplificado</p>
-    </div>
-
-    <script>
-        document.getElementById('fecha').textContent = new Date().toLocaleString('es-ES');
-    </script>
+    <h1>✅ El sitio está funcionando correctamente</h1>
+    <p>Fecha: <script>document.write(new Date().toLocaleString())</script></p>
 </body>
 </html>
         

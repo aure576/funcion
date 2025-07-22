@@ -1,7 +1,7 @@
 [build]
+  command = ""
   functions = ".netlify/functions"
   publish = "."
-  command = "echo 'Build complete'"
   
 [build.environment]
   NODE_VERSION = "18"
@@ -16,7 +16,7 @@
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
 
-# Redirección para SPA - DEBE estar al final
+# Redirección SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
