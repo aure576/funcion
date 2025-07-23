@@ -28,8 +28,8 @@ Este proyecto implementa un sistema de chat bidireccional en tiempo real con dos
 
 ### Opción 1: Proyecto Único
 Desplegar todo el proyecto en una sola instancia de Netlify:
-- Cliente accesible en: `https://tudominio.netlify.app/`
-- Decorador accesible en: `https://tudominio.netlify.app/decorador/`
+- Cliente accesible en: `- **Cliente:** https://tarta-delicada-cbd311.netlify.app`
+- Decorador accesible en: `https://tarta-delicada-cbd311.netlify.app/decorador/`
 
 ### Opción 2: Proyectos Separados
 Desplegar cada sitio por separado:
